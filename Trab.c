@@ -1,3 +1,8 @@
+//Ass: William Dutra Ribeiro
+//Relatório: https://docs.google.com/document/d/1pj-JLuykbh5XXLhGlJO0apoULGb9LDASJcFFsMHYGnc/edit?usp=sharing
+//Video: https://www.youtube.com/watch?v=adunlWQR6Ms
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #define tamfiltro 3
@@ -171,5 +176,3 @@ int main(void) {
 		cont ++;
 	}
 }
-
-//Ass:William Dutra Ribeiro
