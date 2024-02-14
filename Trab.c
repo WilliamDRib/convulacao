@@ -1,5 +1,5 @@
 //Ass: William Dutra Ribeiro
-//Relatório: https://docs.google.com/document/d/1pj-JLuykbh5XXLhGlJO0apoULGb9LDASJcFFsMHYGnc/edit?usp=sharing
+//Relatório: https://docs.google.com/document/d/1pj-JLuykbh5XXLhGlJO0apoULGb9LDASJcFFsMHYGnc/edit
 //Video: https://www.youtube.com/watch?v=adunlWQR6Ms
 
 
@@ -8,22 +8,22 @@
 #define tamfiltro 3
 #define TAM 50
 
-
+//Função para alocar a matriz dinamicamente;
 int ** alocar(int tam){
 	int ** vet = (int**) calloc(tam, sizeof(int *));
 	for(int i = 0; i < tam;i++){ 
 		vet[i] = (int*) calloc(tam, sizeof(int));
 	}
-	return vet;	
-}//Função para alocar a matriz dinamicamente;
-
-void testar(int ** vet){
+	
+	//Verifica se foi possivel alocar;
 	if(vet == NULL){
 		printf("Memoria insuficiente");
 		exit(0);
 	}
-}//Verificando se a matriz foi realmente alocada;
+	return vet;	
+}
 
+//Função utilizada para inserir valores nas matrizes;
 void preencher(int ** vet,int tam){
 	for(int i = 0; i < tam; i++){
 		for(int j = 0; j < tam; j++){
@@ -33,8 +33,9 @@ void preencher(int ** vet,int tam){
 			vet[i][j] = valor;
 		}
 	}
-}//Função utilizada para inserir valores nas matrizes;
+}
 
+//Função para imprimir a matriz;
 void mostrar(int ** vet,int tam, char texto[]){
 	printf("Valores do %s\n",texto);
 	for(int i = 0; i < tam; i++){
@@ -44,42 +45,50 @@ void mostrar(int ** vet,int tam, char texto[]){
 		}
 		printf("\n");
 	}
-}//Função para imprimir a matriz;
+}
+
+//Função que faz a contagem de vizinhos;
+int contagem(int ** vet, int ** filtro, int i, int j, int tam){
+	int cont = 0;
+	for(int li = -1; li <= 1; li++){
+		for(int col = -1; col <= 1; col++){
+			if(i+li >= 0 && i+li < tam){
+				if(j+col >= 0 && j+col < tam){
+					cont += vet[i+li][j+col] * filtro[li+1][col+1];
+				}
+			}					
+		}
+	}
+	return cont;
+}
  
+//Função responsavel para realizar a convolucao de duas matrizes;
 int ** convulacao(int ** vet, int ** filtro, int ** conv,int tam){
 	for(int i = 0; i < tam; i++){
 		for(int j = 0; j < tam; j++){
-			int cont = 0;
-			for(int li = -1; li <= 1; li++){
-				for(int col = -1; col <= 1; col++){
-					if(i+li >= 0 && i+li < tam){
-						if(j+col >= 0 && j+col < tam){
-							cont += vet[i+li][j+col] * filtro[li+1][col+1];
-						}
-					}					
-				}
-			}
-			conv[i][j] = cont;
+			conv[i][j] = contagem(vet, filtro, i, j, tam);
 		}
 	}
 	return conv;
-}//Função responsavel para realizar a convolucao de duas matrizes;
+}
 
+//Função de desalocamento das matrizes;
 void desalocar(int ** vet,int tam){
 	for(int i = 0; i < tam;i++){
 		free(vet[i]);
 	}
 	free(vet);
-}//Função de desalocamento das matrizes;
+}
 
-
+//Setando o typedef dos dados para um bkp;
 typedef struct {
 	int num_princ[TAM][TAM];
 	int num_filtro[TAM][TAM];
 	int num_conv[TAM][TAM];
 	int tamanho;
-}Dados;//Setando o typedef dos dados para um bkp;
+}Dados;
 
+//Função responsavel em guardar os valores;
 void bkp(int ** vet_princ, int ** vet_filtro, int ** vet_conv, Dados * d,int cont, int tamanho){
 
 	for(int p = 0; p < tamanho; p++){
@@ -96,8 +105,9 @@ void bkp(int ** vet_princ, int ** vet_filtro, int ** vet_conv, Dados * d,int con
 	}
 
 	d[cont].tamanho = tamanho;
-}//Função responsavel em guardar os valores;
+}
 
+//Função para mostrar os dados armazenados em bkp;
 void mostrar_bkp(Dados * d, int cont){
 	for(int pos = 0; pos <= cont; pos ++){
 		printf("Matriz origem do caso %d\n", pos + 1);
@@ -126,7 +136,7 @@ void mostrar_bkp(Dados * d, int cont){
 		}
 		printf("=====================\n");
 	}	
-}//Função para mostrar os dados armazenados em bkp;
+}
 
 
 int main(void) {
@@ -134,7 +144,6 @@ int main(void) {
 	int cont = 0;
 
 	int ** matriz_filtro  = alocar(tamfiltro);	//alocação do filtro;
-	testar(matriz_filtro);
 
 	Dados * dados = (Dados *) malloc(50 * sizeof(Dados)); //bkp;
 
@@ -147,15 +156,13 @@ int main(void) {
 		}
 
 		int ** matriz_origem = alocar(tamanho);
-		printf("Agora prencha o essa matriz\n");
-		testar(matriz_origem);											//alocando, verificando e preenchendo;
+		printf("Agora prencha o essa matriz\n");									//alocando, verificando e preenchendo;
 		preencher(matriz_origem, tamanho);
 
 		printf("Certo, agora prencha o filtro\n");
 		preencher(matriz_filtro, tamfiltro);
 		
-		int ** matriz_conv = alocar(tamanho);
-		testar(matriz_conv);												// Convolucionando;
+		int ** matriz_conv = alocar(tamanho);												// Convolucionando;
 		matriz_conv = convulacao(matriz_origem, matriz_filtro, matriz_conv, tamanho);
 		mostrar(matriz_conv,tamanho,"Tabela Convulada");		
 
